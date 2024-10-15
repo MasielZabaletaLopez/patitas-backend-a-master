@@ -5,11 +5,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import pe.edu.cibertec.patitas_backend_a.dto.LoginRequestDTO;
+import pe.edu.cibertec.patitas_backend_a.dto.SignOutRequestDTO;
 import pe.edu.cibertec.patitas_backend_a.service.AutenticacionService;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.time.LocalDate;
 
 @Service
 public class AutenticacionServiceImpl implements AutenticacionService {
@@ -30,8 +30,8 @@ public class AutenticacionServiceImpl implements AutenticacionService {
 
                 String[] datos = linea.split(";");
                 if (loginRequestDTO.tipoDocumento().equals(datos[0]) &&
-                    loginRequestDTO.numeroDocumento().equals(datos[1]) &&
-                    loginRequestDTO.password().equals(datos[2])) {
+                        loginRequestDTO.numeroDocumento().equals(datos[1]) &&
+                        loginRequestDTO.password().equals(datos[2])) {
 
                     datosUsuario = new String[2];
                     datosUsuario[0] = datos[3]; // Recuperar nombre
@@ -52,4 +52,16 @@ public class AutenticacionServiceImpl implements AutenticacionService {
         return datosUsuario;
     }
 
+    @Override
+    public String CierreSesion(SignOutRequestDTO signOutRequestDTO) throws IOException {
+        File file = new File("src/main/resources/cierreSesion.txt");
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
+            bw.write(signOutRequestDTO.tipoDocumento() + ";" + signOutRequestDTO.numeroDocumento() + ";" + signOutRequestDTO.fechaCierre()+ "\n");
+            return "Se cerro sesion";
+        } catch (IOException e) {
+            return "Ocurrio un error" +e.getMessage();
+        }
+    }
 }
+
